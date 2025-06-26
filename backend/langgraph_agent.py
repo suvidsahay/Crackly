@@ -1,6 +1,4 @@
 # backend/langgraph/master_agent.py
-import os
-import time
 import json
 from langgraph.graph import StateGraph, START
 from typing import TypedDict, Annotated
@@ -15,6 +13,7 @@ class AgentState(TypedDict):
     company: str
     job_desc_url: str
     position: str
+    interviewer_profile: str
     past_interview_questions: Annotated[dict, "past_questions_node"]
     prospective_interview_questions: Annotated[str, "future_questions_node"]
     followup_questions: Annotated[str, "followup_node"]
@@ -49,10 +48,11 @@ class MasterAgent:
         graph.add_node("curate", curate_agent.run)
 
         # Set all 3 as entry points (they can run in parallel)
-        graph.add_edge(START, "curate_questions")
+        # graph.add_edge(START, "curate_questions")
         graph.add_edge(START, "search_questions")
         graph.add_edge(START, "curate_followup")
 
+        graph.add_edge("search_questions", "curate_questions")
         # Add edges from all 3 start points to curate
         graph.add_edge("curate_questions", "curate")
         graph.add_edge("search_questions", "curate")
@@ -91,13 +91,14 @@ if __name__ == "__main__":
     interviewer_name = "Jane Smith"
     interviewer_position = "Software Engineer"
     company = "OpenAI"
-    job_desc_url = "https://example.com/job"
+    job_desc_url = "https://www.dragonfruit.ai/company"
     position = "Machine Learning Engineer"
 
     agent = MasterAgent()
     result = agent.run(
         parsed_resume=parsed_resume,
         interviewer_name=interviewer_name,
+        interviewer_position=interviewer_position,
         company=company,
         job_desc_url=job_desc_url,
         position=position

@@ -1,7 +1,12 @@
 import os
 import time
 import random
+import logging
 from google import genai
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class GeminiClient:
     def __init__(self, api_key: str = None):
@@ -37,5 +42,7 @@ class GeminiClient:
                 config=config,
                 contents=prompt
             )
+            logger.info(f"GeminiUtils - Total token count: {response.usage_metadata.total_token_count}")
+
             return response.text.strip()
         return self.exponential_backoff(call_model, max_retries=max_retries)

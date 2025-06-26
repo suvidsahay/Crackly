@@ -9,18 +9,15 @@ html, body, #root {
 }
 
 .App {
-    /* This is the key part for centering your form */
     display: grid;
     place-items: center;
-
     min-height: 100vh;
-    padding: 2rem; /* Add some padding so the form doesn't touch the edges */
+    padding: 2rem;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .form-container {
     width: 100%;
-    /* You can adjust this width to your liking */
     max-width: 900px;
     background: white;
     border-radius: 15px;
@@ -155,18 +152,39 @@ textarea {
     white-space: pre-wrap;
 }
 
+/* --- FIX FOR LIST INDENTATION --- */
+/* The old, overly-specific rules have been replaced with these. */
+
+/* Style all lists within the result content */
 .result-content ol,
 .result-content ul {
-    margin: 15px 0;
-    padding-left: 32px;
-    list-style-position: inside;
+    /* KEY FIX: This places the marker (bullet/number) outside the text
+       flow, which allows for clean, standard indentation. */
+    list-style-position: outside;
+
+    /* This padding creates the indentation for the entire list. */
+    padding-left: 2em;
+    margin: 1em 0;
 }
 
+/* Style all list items consistently for good spacing */
 .result-content li {
-    margin-bottom: 8px;
-    line-height: 1.6;
-    padding-left: 2px;
+    /* Adds a small space between the marker and the start of the text */
+    padding-left: 0.5em;
+    margin-bottom: 0.8em;
 }
+
+/* Further indent any nested lists */
+.result-content ol ul,
+.result-content ul ul {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    /* This padding is added on top of the parent's padding */
+    padding-left: 2em;
+}
+
+
+/* --- END OF FIX --- */
 
 .sources-section {
     margin-top: 15px;
@@ -205,31 +223,4 @@ textarea {
     color: #718096;
     font-size: 0.9rem;
     margin-top: 5px;
-}
-
-/* Make the topic/title inline with the number */
-.result-content ol > li > strong,
-.result-content ol > li > b {
-    display: inline;
-    font-weight: 700;
-    margin-left: 0.3em;
-}
-
-/* Remove extra margin between numbered items */
-.result-content ol > li {
-    margin-bottom: 0.5em;
-    padding-left: 0.2em;
-}
-
-/* Indent sub-bullets and reduce their spacing */
-.result-content ol > li > ul,
-.result-content ol > li > ol {
-    margin-top: 0.3em;
-    margin-bottom: 0.3em;
-    padding-left: 1.5em;
-}
-
-.result-content ul > li {
-    margin-bottom: 0.3em;
-    padding-left: 0.2em;
 }
