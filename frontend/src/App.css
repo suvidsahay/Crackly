@@ -1,0 +1,235 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body, #root {
+    height: 100%;
+}
+
+.App {
+    /* This is the key part for centering your form */
+    display: grid;
+    place-items: center;
+
+    min-height: 100vh;
+    padding: 2rem; /* Add some padding so the form doesn't touch the edges */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.form-container {
+    width: 100%;
+    /* You can adjust this width to your liking */
+    max-width: 900px;
+    background: white;
+    border-radius: 15px;
+    padding: 40px 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.form-section {
+    margin-bottom: 30px;
+}
+
+.form-section h2 {
+    color: #4a5568;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.form-actions {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    min-width: 200px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+/* --- Styles for Results --- */
+.loading, .error-container, .results-container {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.loading {
+    text-align: center;
+    color: #4a5568;
+}
+
+.error-container {
+    background: #fed7d7;
+    border: 1px solid #feb2b2;
+    color: #c53030;
+}
+
+.results-container {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
+}
+
+.results-container h2 {
+    color: #4a5568;
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+    text-align: center;
+}
+
+.result-section {
+    background: #f7fafc;
+    border-radius: 10px;
+    padding: 25px;
+    border-left: 4px solid #667eea;
+    margin-bottom: 25px;
+}
+
+.result-section h3 {
+    color: #2d3748;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.result-section h3::before {
+    content: "📋";
+    font-size: 1.2rem;
+}
+
+.result-content {
+    color: #4a5568;
+    line-height: 1.7;
+    white-space: pre-wrap;
+}
+
+.result-content ol,
+.result-content ul {
+    margin: 15px 0;
+    padding-left: 32px;
+    list-style-position: inside;
+}
+
+.result-content li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+    padding-left: 2px;
+}
+
+.sources-section {
+    margin-top: 15px;
+    padding: 0 5px 0 5px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.sources-section h4 {
+    color: #2d3748;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.source-item {
+    background: white;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border: 1px solid #e2e8f0;
+    box-sizing: border-box;
+    width: 100%;
+    overflow-wrap: break-word;
+}
+
+.source-item a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.source-item a:hover {
+    text-decoration: underline;
+}
+
+.source-content {
+    color: #718096;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+/* Make the topic/title inline with the number */
+.result-content ol > li > strong,
+.result-content ol > li > b {
+    display: inline;
+    font-weight: 700;
+    margin-left: 0.3em;
+}
+
+/* Remove extra margin between numbered items */
+.result-content ol > li {
+    margin-bottom: 0.5em;
+    padding-left: 0.2em;
+}
+
+/* Indent sub-bullets and reduce their spacing */
+.result-content ol > li > ul,
+.result-content ol > li > ol {
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+    padding-left: 1.5em;
+}
+
+.result-content ul > li {
+    margin-bottom: 0.3em;
+    padding-left: 0.2em;
+}
