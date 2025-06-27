@@ -13,9 +13,6 @@ These agents work together to provide a comprehensive, context-aware interview p
 ![LangGraph Backend Architecture](assets/graph.png)
 
 ## Demo
-<div align="center">
-  <img src="assets/Crackly.gif" alt="Crackly Demo" width="600"/>
-</div>
 
 [Download/Watch the demo video](assets/Crackly.mp4)
 
@@ -106,8 +103,3 @@ Generate interview preparation content.
 - The backend uses Flask and expects API keys for Tavily and Gemini in the environment.
 - The frontend is built with React (Vite) and communicates with the backend via REST API.
 - For local development, you can run each service separately (see Dockerfiles for details).
-
----
-
-## License
-MIT
