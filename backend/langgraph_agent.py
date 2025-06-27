@@ -48,11 +48,11 @@ class MasterAgent:
         graph.add_node("curate", curate_agent.run)
 
         # Set all 3 as entry points (they can run in parallel)
-        # graph.add_edge(START, "curate_questions")
+        graph.add_edge(START, "curate_questions")
         graph.add_edge(START, "search_questions")
         graph.add_edge(START, "curate_followup")
 
-        graph.add_edge("search_questions", "curate_questions")
+        # graph.add_edge("search_questions", "curate_questions")
         # Add edges from all 3 start points to curate
         graph.add_edge("curate_questions", "curate")
         graph.add_edge("search_questions", "curate")
@@ -63,6 +63,7 @@ class MasterAgent:
         graph.set_finish_point("curate")
 
         chain = graph.compile()
+
 
         # Prepare inputs for all search nodes
         inputs = {

@@ -18,7 +18,7 @@ class FutureQuestionsAgent:
             query = f"Give me details about {name} who works at {company}"
         
         logger.info(f"FutureQuestionsAgent - Tavily Search Query: {query}")
-        results = self.tavily.client.search(query=query, topic="general", max_results=5, include_images=True, include_answer=True)
+        results = self.tavily.client.search(query=query, topic="general", max_results=5, include_images=True, include_answer="advanced")
         profile_details = results["answer"]
         logger.info(f"FutureQuestionsAgent - Tavily Profile Result: {profile_details[:200]}...")
         return profile_details
