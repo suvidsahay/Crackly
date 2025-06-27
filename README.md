@@ -10,16 +10,14 @@ Crackly leverages a modular agent-based backend to deliver tailored interview pr
 
 These agents work together to provide a comprehensive, context-aware interview prep experience.
 
-![LangGraph Backend Architecture](images/graph.png)
+![LangGraph Backend Architecture](assets/graph.png)
 
 ## Demo
 <div align="center">
-  <video src="frontend/src/Crackly.mp4" controls width="600">
-    Your browser does not support the video tag.
-  </video>
+  <img src="assets/Crackly.gif" alt="Crackly Demo" width="600"/>
 </div>
 
-[Download/Watch the demo video](frontend/src/Crackly.mp4)
+[Download/Watch the demo video](assets/Crackly.mp4)
 
 ## Features
 - **Personalized Interview Questions**: Curated using your resume, job description, and company/interviewer info.
