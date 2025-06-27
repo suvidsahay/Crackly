@@ -2,6 +2,25 @@
 
 Crackly is a full-stack AI-powered interview preparation assistant. It leverages advanced search and LLMs to generate tailored interview questions, company research, and follow-up prompts based on your resume, job description, and interviewer details.
 
+## Overview
+Crackly leverages a modular agent-based backend to deliver tailored interview preparation. The backend consists of specialized agents:
+- **Future/Prospective Questions Agent**: Generates likely interview questions using your resume, job description, and interviewer profile(gathered through Tavily search), powered by Gemini and Tavily.
+- **Past Interview Questions Agent**: Curates common and company-specific questions from public sources.
+- **Follow-up Questions Agent**: Suggests thoughtful follow-up questions for your interview based on recent company news.
+
+These agents work together to provide a comprehensive, context-aware interview prep experience.
+
+![LangGraph Backend Architecture](images/graph.png)
+
+## Demo
+<div align="center">
+  <video src="frontend/src/Crackly.mp4" controls width="600">
+    Your browser does not support the video tag.
+  </video>
+</div>
+
+[Download/Watch the demo video](frontend/src/Crackly.mp4)
+
 ## Features
 - **Personalized Interview Questions**: Curated using your resume, job description, and company/interviewer info.
 - **Company & Interviewer Research**: Gathers relevant info and news.
