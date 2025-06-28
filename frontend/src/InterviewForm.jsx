@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
+import pdfToText from 'react-pdftotext'
 
 function InterviewForm() {
   const [form, setForm] = useState({
@@ -17,6 +18,32 @@ function InterviewForm() {
   function handleChange(e) {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
+  }
+
+  function handleFileChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.type === "text/plain") {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setForm(prev => ({ ...prev, resume: event.target.result }));
+      };
+      reader.onerror = (err) => {
+        alert("Failed to read text file.");
+        console.error("Failed to read text file", err);
+      };
+      reader.readAsText(file);
+    } else if (file.type === "application/pdf") {
+      pdfToText(file)
+        .then(text => setForm(prev => ({ ...prev, resume: text })))
+        .catch(error => {
+          alert("Failed to extract text from PDF.");
+          console.error("Failed to extract text from pdf", error);
+        });
+    } else {
+      alert("Please upload a .txt or .pdf file.");
+    }
   }
 
   async function handleSubmit(e) {
@@ -149,16 +176,15 @@ function InterviewForm() {
       <div className="form-section">
         <h2>Your Resume</h2>
         <div className="form-group">
-          <label htmlFor="resume">Resume Content *</label>
-          <textarea
-            id="resume"
-            name="resume"
-            rows={10}
-            value={form.resume}
-            onChange={handleChange}
-            required
-            placeholder="Paste your resume content here..."
-          />
+        <label htmlFor="resume">Upload Resume (PDF or TXT) *</label>
+        <input
+          type="file"
+          id="resume"
+          name="resume"
+          accept=".pdf,.txt"
+          onChange={handleFileChange}
+          required
+        />
         </div>
       </div>
       <div className="form-actions">
@@ -180,4 +206,4 @@ function InterviewForm() {
   );
 }
 
-export default InterviewForm; 
+export default InterviewForm;
