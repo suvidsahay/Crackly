@@ -1,13 +1,21 @@
 import './App.css';
-import InterviewForm from './InterviewForm';
 import React from 'react';
-
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LandingPage from './LandingPage';
+import InterviewForm from './InterviewForm';
+import Header from './Header';
 
 function App() {
   return (
-    <div className="App">
-      <InterviewForm />
-    </div>
+    <Router>
+      <Header />
+      <div className="app-content">
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/app" element={<InterviewForm />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

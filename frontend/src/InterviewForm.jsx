@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import pdfToText from 'react-pdftotext'
+import Header from './Header';
+import './InterviewForm.css';
+
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 function InterviewForm() {
   const [form, setForm] = useState({
@@ -58,7 +63,7 @@ function InterviewForm() {
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/api/prep_interview', {
+      const response = await fetch(`${API_BASE_URL}/prep_interview`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
