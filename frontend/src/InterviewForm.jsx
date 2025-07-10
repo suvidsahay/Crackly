@@ -19,6 +19,7 @@ function InterviewForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState(null);
+  const [fileLoading, setFileLoading] = useState(false);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -29,25 +30,34 @@ function InterviewForm() {
     const file = e.target.files[0];
     if (!file) return;
 
+    setFileLoading(true);
+
     if (file.type === "text/plain") {
       const reader = new FileReader();
       reader.onload = (event) => {
         setForm(prev => ({ ...prev, resume: event.target.result }));
+        setFileLoading(false);
       };
       reader.onerror = (err) => {
         alert("Failed to read text file.");
+        setFileLoading(false);
         console.error("Failed to read text file", err);
       };
       reader.readAsText(file);
     } else if (file.type === "application/pdf") {
       pdfToText(file)
-        .then(text => setForm(prev => ({ ...prev, resume: text })))
+        .then(text => {
+          setForm(prev => ({ ...prev, resume: text }));
+          setFileLoading(false);
+        })
         .catch(error => {
           alert("Failed to extract text from PDF.");
+          setFileLoading(false);
           console.error("Failed to extract text from pdf", error);
         });
     } else {
       alert("Please upload a .txt or .pdf file.");
+      setFileLoading(false);
     }
   }
 
@@ -193,11 +203,12 @@ function InterviewForm() {
         </div>
       </div>
       <div className="form-actions">
-        <button type="submit" className="btn-primary">
-          Generate Interview Prep
+        <button type="submit" className="btn-primary" disabled={loading || fileLoading}>
+          {fileLoading ? "Reading Resume..." : "Generate Interview Prep"}
         </button>
       </div>
       {loading && <div className="loading">Processing...</div>}
+      {fileLoading && <div className="loading">Reading resume file...</div>}
       {error && <div className="error-container">{error}</div>}
       {result && (
         <div className="results-container">
