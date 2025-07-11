@@ -3,6 +3,7 @@ import './Header.css';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { track } from '@vercel/analytics';
 
 function Header() {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ function Header() {
   }, []);
 
   const handleSignIn = async () => {
+    track('sign_in_clicked');
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
@@ -40,6 +42,7 @@ function Header() {
   };
 
   const handleSignOut = async () => {
+    track('log_out_clicked', { email: user?.email });
     await signOut(auth);
     if (location.pathname === '/app') {
       navigate('/');
@@ -49,6 +52,7 @@ function Header() {
   const handleDeleteAccount = async () => {
     if (window.confirm("Are you sure you want to delete your account? This cannot be undone.")) {
       try {
+        track('delete_account_clicked', { email: user?.email });
         await user.delete();
         alert("Account deleted.");
         if (location.pathname === '/app') {

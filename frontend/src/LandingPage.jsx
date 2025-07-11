@@ -5,11 +5,13 @@ import { auth } from './firebase'; // Assuming you exported 'auth' from src/lib/
 import { useNavigate } from 'react-router-dom';
 import Header from './Header';
 import { onAuthStateChanged } from 'firebase/auth';
+import { track } from '@vercel/analytics';
 
 function LandingPage() {
   const navigate = useNavigate();
 
   const handleGetStarted = async () => {
+    track('get_started_clicked');
     if (auth.currentUser) {
       // User is already signed in, go straight to /app
       navigate('/app');
