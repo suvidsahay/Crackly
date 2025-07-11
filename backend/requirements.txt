@@ -16,4 +16,5 @@ python-dotenv>=1.0.0
 
 # Additional dependencies that might be needed
 requests>=2.31.0
+firebase-admin
 

@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import pdfToText from 'react-pdftotext'
 import Header from './Header';
 import './InterviewForm.css';
+import { getAuth } from "firebase/auth";
 
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
@@ -73,9 +74,21 @@ function InterviewForm() {
 
     setLoading(true);
     try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (!user) {
+        setError("You must be signed in to submit.");
+        setLoading(false);
+        return;
+      }
+      const idToken = await user.getIdToken();
+
       const response = await fetch(`${API_BASE_URL}/prep_interview`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
         body: JSON.stringify(form)
       });
       if (!response.ok) throw new Error('Server error');

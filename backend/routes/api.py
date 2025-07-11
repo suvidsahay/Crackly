@@ -1,6 +1,9 @@
 from flask import Blueprint, request, jsonify
 from backend.langgraph_agent import MasterAgent
 import logging
+import firebase_admin
+from firebase_admin import credentials, auth as firebase_auth
+from functools import wraps
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -8,12 +11,31 @@ logger = logging.getLogger(__name__)
 
 api_bp = Blueprint('api', __name__)
 
+cred = credentials.Certificate('backend/firebase_service_account.json')
+firebase_admin.initialize_app(cred)
+
+def firebase_auth_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        auth_header = request.headers.get('Authorization', None)
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return jsonify({'error': 'Unauthorized'}), 401
+        id_token = auth_header.split('Bearer ')[1]
+        try:
+            decoded_token = firebase_auth.verify_id_token(id_token)
+            request.user = decoded_token
+        except Exception as e:
+            return jsonify({'error': 'Invalid token'}), 401
+        return f(*args, **kwargs)
+    return decorated_function
+
 @api_bp.route('/health', methods=['GET'])
 def health_check():
     logger.info("Health check endpoint called.")
     return jsonify({"status": "Running"}), 200
 
 @api_bp.route('/prep_interview', methods=['POST'])
+@firebase_auth_required
 def prep_interview():
     """
     POST payload:

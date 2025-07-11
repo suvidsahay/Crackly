@@ -1,5 +1,6 @@
 __pycache__
 .env
+backend/firebase_service_account.json
 
 node_modules
 
