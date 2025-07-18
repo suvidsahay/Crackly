@@ -45,7 +45,9 @@ def prep_interview():
       "interviewer_position": "Interviewer Position",
       "company": "CompanyName",
       "job_description_url": "https://...",
-      "position": "Title"
+      "position": "Title",
+      "interviewer_profile": "...profile info...",
+      "job_description": "...job description..."
     }
     """
     data = request.get_json()
@@ -58,6 +60,8 @@ def prep_interview():
     company = data.get("company", "")
     job_desc_url = data.get("job_description_url", "")
     position = data.get("position", "")
+    interviewer_profile = data.get("interviewer_profile", None)
+    job_description = data.get("job_description", None)
     
     master = MasterAgent()
     result = master.run(
@@ -66,7 +70,31 @@ def prep_interview():
         interviewer_position=interviewer_position,
         company=company,
         job_desc_url=job_desc_url,
-        position=position
+        position=position,
+        interviewer_profile=interviewer_profile,
+        job_description=job_description
     )
     
     return result, 200, {'Content-Type': 'application/json'}
+
+@api_bp.route('/extract_job_description', methods=['POST'])
+@firebase_auth_required
+def extract_job_description():
+    data = request.get_json()
+    url = data.get('url')
+    if not url:
+        return jsonify({'error': 'No URL provided'}), 400
+    try:
+        from backend.utils.job_description_extractor import JobDescriptionExtractor
+        extractor = JobDescriptionExtractor()
+        result = extractor.extract(url)
+        # If any field is 'ERROR', return 422
+        if any(result.get(field, '').strip() == 'ERROR' for field in ['job_description', 'job_title', 'company']):
+            return jsonify(result), 422, {'Content-Type': 'application/json'}
+        return jsonify(result), 200, {'Content-Type': 'application/json'}
+    except FileNotFoundError as e:
+        return jsonify({'error': str(e)}), 404, {'Content-Type': 'application/json'}
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 422, {'Content-Type': 'application/json'}
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

@@ -46,3 +46,4 @@ class GeminiClient:
 
             return response.text.strip()
         return self.exponential_backoff(call_model, max_retries=max_retries)
+    

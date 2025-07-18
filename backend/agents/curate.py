@@ -25,12 +25,10 @@ class CurateAgent:
         }
 
     def run(self, state: dict):
-        # print("curate", state)
         # Extract results from the three search agents
-        profile_info = state.get("profile", "")
-        questions_info = state.get("questions", "")
-        followup_info = state.get("followup_search", "")
+        profile_info = state.get("interviewer_profile", "")
+        questions_info = state.get("past_interview_questions", "")
+        followup_info = state.get("followup_questions", "")
         prospective_info = state.get("prospective_interview_questions", "")
     
-        
         return self.curate_results(profile_info, questions_info, followup_info, prospective_info)

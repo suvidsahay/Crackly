@@ -14,6 +14,7 @@ class AgentState(TypedDict):
     job_desc_url: str
     position: str
     interviewer_profile: str
+    job_description: str
     past_interview_questions: Annotated[dict, "past_questions_node"]
     prospective_interview_questions: Annotated[str, "future_questions_node"]
     followup_questions: Annotated[str, "followup_node"]
@@ -23,15 +24,12 @@ class MasterAgent:
         pass
 
     def run(self, parsed_resume: dict, interviewer_name: str, interviewer_position: str, company: str,
-            job_desc_url: str, position: str):
+            job_desc_url: str, position: str, interviewer_profile: str = None, job_description: str = None):
         """
         Run the agent pipeline with 3 start points:
-        1. Profile search - search interviewer profile
-        2. Past Questions search - search past interview questions for position
-        3. Prospective Questions curator - curate prospective interview questions for the position
-        3. Company search - search for company related news in the sector related to the position
+        1. Past Questions search - search past interview questions for position
+        2. Prospective Questions curator - curate prospective interview questions for the position
         3. Followup company news curator - search followup questions to ask based on the company search results
-        4. Curate - combine all results
         """
         # Initialize agents
         questions_agent = QuestionsSearchAgent()
@@ -58,12 +56,10 @@ class MasterAgent:
         graph.add_edge("search_questions", "curate")
         graph.add_edge("curate_followup", "curate")
 
-        
         # Set curate as the finish point
         graph.set_finish_point("curate")
 
         chain = graph.compile()
-
 
         # Prepare inputs for all search nodes
         inputs = {
@@ -72,7 +68,9 @@ class MasterAgent:
             "interviewer_position": interviewer_position,
             "company": company,
             "job_desc_url": job_desc_url,
-            "position": position
+            "position": position,
+            "interviewer_profile": interviewer_profile,
+            "job_description": job_description
         }
 
         # Run graph - all 3 search nodes will execute in parallel, then curate combines results
