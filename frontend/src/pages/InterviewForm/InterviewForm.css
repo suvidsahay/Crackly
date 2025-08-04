@@ -14,6 +14,14 @@
     gap: 1.5rem;
 }
 
+/* --- THIS IS THE FIX --- */
+/* This new class is for items inside form-columns that should take up a full row */
+.full-width-col {
+    flex-basis: 100%; /* This makes the element take the full width of the container */
+    width: 100%;
+}
+/* --- END OF FIX --- */
+
 @media (max-width: 900px) {
     .form-columns {
         flex-direction: column;
@@ -25,12 +33,14 @@
 }
 
 .form-container {
-    width: 100%;
-    max-width: 1200px; /* increased from 900px */
+    width: auto; /* Allows the container to shrink to its content or max-width */
+    max-width: 1200px;
     background: white;
     border-radius: 15px;
     padding: 40px 30px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    min-height: 0; /* Prevent collapse */
+    overflow: visible; /* Ensure all content is visible */
 }
 
 .form-section {

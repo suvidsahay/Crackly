@@ -1,0 +1,91 @@
+/* Sidebar.css */
+
+.sidebar {
+  /* Change background to a clean white */
+  background-color: #ffffff;
+  /* Change text color to dark */
+  color: #1f2937;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  box-sizing: border-box;
+  /* Use a subtle, light grey border */
+  border-right: 1px solid #e5e7eb;
+  transition: width 0.3s ease;
+  position: sticky;
+  top: 0;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.5rem 1rem 0.5rem;
+  /* Match the light border color */
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 1rem;
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600; /* Slightly bolder for better visibility */
+}
+
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.history-item {
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: background-color 0.2s ease;
+  overflow: hidden;
+}
+
+/* Light hover effect */
+.history-item:hover {
+  background-color: #f3f4f6; /* A very light grey for hover */
+}
+
+/* Active (selected) item style */
+.history-item.active {
+  background-color: #e5e7eb; /* A slightly darker grey to show selection */
+  color: #111827; /* Ensure text is still dark and readable */
+}
+
+.history-item-title {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.history-item-subtitle {
+  font-size: 0.8rem;
+  /* A standard grey for secondary text */
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Styles for loading/error messages in the light theme */
+.sidebar-message {
+  padding: 10px 12px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.sidebar-message.error {
+  color: #dc2626; /* A more standard red for errors */
+  font-weight: bold;
+}

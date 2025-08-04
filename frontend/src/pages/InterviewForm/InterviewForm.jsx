@@ -1,34 +1,32 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import pdfToText from 'react-pdftotext'
+import pdfToText from 'react-pdftotext';
 import './InterviewForm.css';
 import { getAuth } from "firebase/auth";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+import { API_BASE_URL } from '../../config';
 
 function InterviewForm() {
   const [form, setForm] = useState({
     interviewer_name: '',
     interviewer_position: '',
-    interviewer_profile: '', // new optional field
+    interviewer_profile: '',
     company: '',
     position: '',
     job_description_url: '',
-    job_description_text: '', // new optional field
+    job_description_text: '',
     resume: '',
-    resume_text: '' // new optional field
+    resume_text: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState(null);
   const [fileLoading, setFileLoading] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null); // To store the file object for display
-  const [isDragActive, setIsDragActive] = useState(false); // To track drag-over state
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isDragActive, setIsDragActive] = useState(false);
   const [extracting, setExtracting] = useState(false);
   const [extractWarning, setExtractWarning] = useState(false);
   const [extractWarningMsg, setExtractWarningMsg] = useState('');
-  const inputRef = useRef(null); // To programmatically trigger the file input click
-
+  const inputRef = useRef(null);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -39,13 +37,12 @@ function InterviewForm() {
   function handleFile(file) {
     if (!file) return;
     setError('');
-    // File type validation
     if (file.type !== "application/pdf" && file.type !== "text/plain") {
       alert("Please upload a .pdf or .txt file.");
       return;
     }
 
-    setSelectedFile(file); // Show the file name in the UI
+    setSelectedFile(file);
     setFileLoading(true);
 
     if (file.type === "text/plain") {
@@ -58,7 +55,7 @@ function InterviewForm() {
         alert("Failed to read text file.");
         setFileLoading(false);
         console.error("Failed to read text file", err);
-        setSelectedFile(null); // Clear on error
+        setSelectedFile(null);
       };
       reader.readAsText(file);
     } else if (file.type === "application/pdf") {
@@ -71,7 +68,7 @@ function InterviewForm() {
           alert("Failed to extract text from PDF.");
           setFileLoading(false);
           console.error("Failed to extract text from pdf", error);
-          setSelectedFile(null); // Clear on error
+          setSelectedFile(null);
         });
     }
   }
@@ -83,7 +80,6 @@ function InterviewForm() {
     handleFile(file);
   }
 
-  // --- NEW DRAG-AND-DROP HANDLERS ---
   function handleDrag(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -104,11 +100,8 @@ function InterviewForm() {
     handleFile(file);
   }
 
-  // --- NEW HELPER FUNCTIONS ---
   function onUploadButtonClick(e) {
-    // Prevent the click from bubbling up to the label and triggering a second click
     e.preventDefault();
-    // Programmatically click the hidden file input
     setError('');
     inputRef.current.click();
   }
@@ -116,7 +109,6 @@ function InterviewForm() {
   function removeSelectedFile() {
     setSelectedFile(null);
     setForm(prev => ({ ...prev, resume: '' }));
-    // Also clear the file input's value
     if (inputRef.current) {
       inputRef.current.value = "";
     }
@@ -127,9 +119,7 @@ function InterviewForm() {
     setError('');
     setResult(null);
 
-    // Use pasted resume if provided, otherwise use uploaded file
     const resumeToSend = form.resume_text.trim() ? form.resume_text : form.resume;
-    // Use pasted job description if provided, otherwise use URL
     const jobDescToSend = form.job_description_text.trim() ? form.job_description_text : form.job_description_url;
 
     if (!form.interviewer_name || !form.company || !form.position || !resumeToSend) {
@@ -146,7 +136,7 @@ function InterviewForm() {
         setLoading(false);
         return;
       }
-      const idToken = await user.getIdToken();
+      const idToken = await user.getIdToken(true);
 
       const payload = {
         interviewer_name: form.interviewer_name,
@@ -154,8 +144,8 @@ function InterviewForm() {
         interviewer_profile: form.interviewer_profile,
         company: form.company,
         position: form.position,
-        job_description_url: form.job_description_url, // always the URL field
-        job_description: form.job_description_text,    // always the text field
+        job_description_url: form.job_description_url,
+        job_description: form.job_description_text,
         resume: resumeToSend
       };
 
@@ -170,6 +160,8 @@ function InterviewForm() {
       if (!response.ok) throw new Error('Server error');
       const data = await response.json();
       setResult(data);
+      // Refresh sidebar to include the new interview
+      window.dispatchEvent(new Event('refreshSidebar')); // Custom event to trigger sidebar update
     } catch (err) {
       setError(err.message || 'Something went wrong');
     } finally {
@@ -179,7 +171,6 @@ function InterviewForm() {
 
   async function handleExtractJobDescription() {
     if (!form.job_description_url) return;
-    // Reset job-related fields before extraction
     setForm(prev => ({
       ...prev,
       job_description_text: '',
@@ -198,13 +189,12 @@ function InterviewForm() {
       }
       const idToken = await user.getIdToken();
 
-      const response = await fetch(`${API_BASE_URL}/extract_job_description`, {
-        method: 'POST',
+      const response = await fetch(`${API_BASE_URL}/extract_job_description?url=${encodeURIComponent(form.job_description_url)}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${idToken}`
-        },
-        body: JSON.stringify({ url: form.job_description_url })
+        }
       });
       if (!response.ok) {
         if (response.status === 404) {
@@ -224,14 +214,12 @@ function InterviewForm() {
         throw new Error('Failed to extract job description');
       }
       const data = await response.json();
-      // Set each field only if not 'ERROR', otherwise leave blank
       setForm(prev => ({
         ...prev,
         job_description_text: data.job_description && data.job_description !== 'ERROR' ? data.job_description : '',
         position: data.job_title && data.job_title !== 'ERROR' ? data.job_title : '',
         company: data.company && data.company !== 'ERROR' ? data.company : ''
       }));
-      // Show warning if any field is 'ERROR'
       if ([data.job_description, data.job_title, data.company].some(v => v && v.trim() === 'ERROR')) {
         setExtractWarningMsg("Some fields couldn't be extracted. Please fill them manually.");
         setExtractWarning(true);
@@ -282,7 +270,6 @@ function InterviewForm() {
     );
   }
 
-  // Add a simple loading spinner component
   function LoadingSpinner() {
     return (
       <span className="input-spinner" style={{ marginLeft: 8, display: 'inline-block', verticalAlign: 'middle' }}>
@@ -297,8 +284,8 @@ function InterviewForm() {
 
   return (
     <form onSubmit={handleSubmit} className="form-container">
+      {/* The form-columns div now wraps ALL the form content */}
       <div className="form-columns">
-        {/* Column 1: Interviewer Details, then Resume */}
         <div className="form-col">
           <div className="form-section">
             <h2>Interviewer Details</h2>
@@ -342,7 +329,6 @@ function InterviewForm() {
             </div>
           </div>
         </div>
-        {/* Column 2: Job Details */}
         <div className="form-col">
           <div className="form-section">
             <h2>Job Details</h2>
@@ -385,35 +371,33 @@ function InterviewForm() {
               <div className="form-group">
                 <label htmlFor="position">Job Title*</label>
                 <div className="input-wrapper">
-
-                <input
-                  type="text"
-                  id="position"
-                  name="position"
-                  value={form.position}
-                  onChange={handleChange}
-                  required
-                  placeholder="Machine Learning Engineer"
-                  disabled={extracting}
-                />
-                {extracting && <LoadingSpinner />}
+                  <input
+                    type="text"
+                    id="position"
+                    name="position"
+                    value={form.position}
+                    onChange={handleChange}
+                    required
+                    placeholder="Machine Learning Engineer"
+                    disabled={extracting}
+                  />
+                  {extracting && <LoadingSpinner />}
                 </div>
               </div>
               <div className="form-group">
                 <label htmlFor="company">Company*</label>
                 <div className="input-wrapper">
-
-                <input
-                  type="text"
-                  id="company"
-                  name="company"
-                  value={form.company}
-                  onChange={handleChange}
-                  required
-                  placeholder="OpenAI"
-                  disabled={extracting}
-                />
-                {extracting && <LoadingSpinner />}
+                  <input
+                    type="text"
+                    id="company"
+                    name="company"
+                    value={form.company}
+                    onChange={handleChange}
+                    required
+                    placeholder="OpenAI"
+                    disabled={extracting}
+                  />
+                  {extracting && <LoadingSpinner />}
                 </div>
               </div>
             </div>
@@ -434,73 +418,74 @@ function InterviewForm() {
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="form-section resume-section">
-      <h2>Resume</h2>
         
-        {/* The hidden file input */}
-        <input
-          type="file"
-          id="resume"
-          name="resume"
-          accept=".pdf,.txt"
-          onChange={handleFileChange}
-          ref={inputRef}
-          className="file-upload-input"
-        />
-
-        {/* Conditionally render the drop zone or the file preview */}
-        {!selectedFile ? (
-          <div className="file-upload-container">
-            <label htmlFor="resume">
-              <div
-                className={`file-drop-zone ${isDragActive ? 'drag-active' : ''}`}
-                onDragEnter={handleDrag}
-                onDragOver={handleDrag}
-                onDragLeave={handleDrag}
-                onDrop={handleDrop}
-                onClick={(e) => onUploadButtonClick(e)} // Trigger click on the div
-              >
-                <p>Drag and drop your resume here, or <span>click to select a file</span>.</p>
-                <p style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '8px' }}>
-                  Supported formats: PDF, TXT
-                </p>
-              </div>
-            </label>
-          </div>
-        ) : (
-          <div className="file-preview">
-            <p>Selected File: {selectedFile.name}</p>
-            <button type="button" onClick={removeSelectedFile} className="remove-file-btn">
-              ×
-            </button>
-          </div>
-        )}
-
-        <div className="form-group" style={{marginTop: '1.5rem', position: 'relative'}}>
-          <label htmlFor="resume_text">Or Paste Resume</label>
-          <textarea
-            id="resume_text"
-            name="resume_text"
-            value={form.resume_text}
-            onChange={handleChange}
-            placeholder="Paste your resume here if you prefer"
-            rows={12}
-            style={{ paddingRight: fileLoading ? 40 : undefined }}
+        {/* The resume section is now MOVED INSIDE form-columns */}
+        {/* I've added a new class "full-width-col" to it */}
+        <div className="form-section resume-section full-width-col">
+          <h2>Resume</h2>
+          <input
+            type="file"
+            id="resume"
+            name="resume"
+            accept=".pdf,.txt"
+            onChange={handleFileChange}
+            ref={inputRef}
+            className="file-upload-input"
           />
-          {fileLoading && (
-            <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)' }}>
-              <LoadingSpinner />
-            </span>
+          {!selectedFile ? (
+            <div className="file-upload-container">
+              <label htmlFor="resume">
+                <div
+                  className={`file-drop-zone ${isDragActive ? 'drag-active' : ''}`}
+                  onDragEnter={handleDrag}
+                  onDragOver={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDrop={handleDrop}
+                  onClick={(e) => onUploadButtonClick(e)}
+                >
+                  <p>Drag and drop your resume here, or <span>click to select a file</span>.</p>
+                  <p style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '8px' }}>
+                    Supported formats: PDF, TXT
+                  </p>
+                </div>
+              </label>
+            </div>
+          ) : (
+            <div className="file-preview">
+              <p>Selected File: {selectedFile.name}</p>
+              <button type="button" onClick={removeSelectedFile} className="remove-file-btn">
+                ×
+              </button>
+            </div>
           )}
+          <div className="form-group" style={{ marginTop: '1.5rem', position: 'relative' }}>
+            <label htmlFor="resume_text">Or Paste Resume</label>
+            <textarea
+              id="resume_text"
+              name="resume_text"
+              value={form.resume_text}
+              onChange={handleChange}
+              placeholder="Paste your resume here if you prefer"
+              rows={12}
+              style={{ paddingRight: fileLoading ? 40 : undefined }}
+            />
+            {fileLoading && (
+              <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)' }}>
+                <LoadingSpinner />
+              </span>
+            )}
+          </div>
         </div>
-      </div>
-      <div className="form-actions">
-        <button type="submit" className="btn-primary" disabled={loading || fileLoading}>
-          {fileLoading ? "Reading Resume..." : "Generate Interview Prep"}
-        </button>
-      </div>
+        
+        {/* The actions are also moved inside and given the full-width-col class */}
+        <div className="form-actions full-width-col">
+          <button type="submit" className="btn-primary" disabled={loading || fileLoading}>
+            {fileLoading ? "Reading Resume..." : "Generate Interview Prep"}
+          </button>
+        </div>
+
+      </div> {/* End of form-columns */}
+
       {loading && <div className="loading">Processing...</div>}
       {fileLoading && <div className="loading">Reading resume file...</div>}
       {error && <div className="error-container">{error}</div>}

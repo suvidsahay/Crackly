@@ -1,5 +1,4 @@
 # backend/langgraph/master_agent.py
-import json
 from langgraph.graph import StateGraph, START
 from typing import TypedDict, Annotated
 
@@ -75,9 +74,8 @@ class MasterAgent:
 
         # Run graph - all 3 search nodes will execute in parallel, then curate combines results
         result = chain.invoke(inputs)
-
-        # Return the result as JSON string
-        return json.dumps(result, indent=2)
+        
+        return result;
 
 
 if __name__ == "__main__":

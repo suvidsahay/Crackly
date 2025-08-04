@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react';
 import './LandingPage.css';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'; // Import Firebase Auth modules
-import { auth } from './firebase'; // Assuming you exported 'auth' from src/lib/firebase.js
+import { auth } from '../../firebase'; // Assuming you exported 'auth' from src/lib/firebase.js
 import { useNavigate } from 'react-router-dom';
-import Header from './Header';
-import { onAuthStateChanged } from 'firebase/auth';
+import Header from '../../components/Header/Header';
 import { track } from '@vercel/analytics';
 
 function LandingPage() {

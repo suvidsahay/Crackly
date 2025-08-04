@@ -66,7 +66,7 @@ class FutureQuestionsAgent:
         if not job_description and job_description_url:
             try:
                 job_description = self.job_extractor.extract(job_description_url)
-            except (ValueError, RuntimeError) as e:
+            except (ValueError, RuntimeError, FileNotFoundError) as e:
                 logger.error(f"Failed to extract job description: {e}")
                 # Continue without job description rather than failing the entire process
         

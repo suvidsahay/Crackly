@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './Header.css';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebase';
+import { auth } from '../../firebase';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { track } from '@vercel/analytics';
 
@@ -75,7 +75,7 @@ function Header() {
       <div
         className="crackedly-logo-row"
         style={{ cursor: 'pointer' }}
-        onClick={() => navigate('/')}
+        onClick={() => navigate('/app')}
         title="Go to Home"
       >
         <img src="/crackedly.png" alt="Crackedly Logo" className="crackedly-logo-img" />

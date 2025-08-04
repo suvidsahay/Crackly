@@ -9,11 +9,55 @@ html, body, #root {
 }
 
 .App {
-    display: grid;
-    place-items: center;
+    display: flex;
+    flex-direction: column;
     min-height: 100vh;
+    background: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 100%);
+}
+
+header {
+    z-index: 1000; /* Ensure header stays above content */
+    position: relative;
+    /* Assuming a header height of 60px */
+    height: 60px;
+}
+
+/* --- THIS IS THE MAIN FIX --- */
+/* Sidebar is now a standard flex item */
+.sidebar {
+    /* position: fixed; <-- REMOVED */
+    width: 250px;
+    flex-shrink: 0; /* ADDED: Prevents the sidebar from shrinking */
+    height: 100%; /* Fills the height of its flex container */
+    overflow-y: auto;
+    background: #fff;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Main content area now works correctly within the flex layout */
+.app-content {
+    flex: 1; /* Takes up the remaining available space */
     padding: 2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    overflow-y: auto;
+    display: flex;
+    justify-content: center; /* This will now correctly center your form! */
+    background: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 100%);
+}
+/* --- END OF FIX --- */
+
+
+/* Adjust for smaller screens */
+@media (max-width: 768px) {
+    /* On mobile, you might want to hide the sidebar or use a different layout */
+    .sidebar {
+        display: none; /* Example: hide sidebar on small screens */
+    }
+    .app-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 1rem;
+        justify-content: center;
+    }
 }
 
 /* --- Styles for Results --- */
@@ -77,39 +121,24 @@ html, body, #root {
     white-space: pre-wrap;
 }
 
-/* --- FIX FOR LIST INDENTATION --- */
-/* The old, overly-specific rules have been replaced with these. */
-
-/* Style all lists within the result content */
 .result-content ol,
 .result-content ul {
-    /* KEY FIX: This places the marker (bullet/number) outside the text
-       flow, which allows for clean, standard indentation. */
     list-style-position: outside;
-
-    /* This padding creates the indentation for the entire list. */
     padding-left: 2em;
     margin: 1em 0;
 }
 
-/* Style all list items consistently for good spacing */
 .result-content li {
-    /* Adds a small space between the marker and the start of the text */
     padding-left: 0.5em;
     margin-bottom: 0.8em;
 }
 
-/* Further indent any nested lists */
 .result-content ol ul,
 .result-content ul ul {
     margin-top: 0.5em;
     margin-bottom: 0.5em;
-    /* This padding is added on top of the parent's padding */
     padding-left: 2em;
 }
-
-
-/* --- END OF FIX --- */
 
 .sources-section {
     margin-top: 15px;
@@ -148,15 +177,4 @@ html, body, #root {
     color: #718096;
     font-size: 0.9rem;
     margin-top: 5px;
-}
-
-.app-content {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-  width: 100vw;
-  background: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 100%);
-  box-sizing: border-box;
-  padding-top: 2rem; /* or as needed */
 }
